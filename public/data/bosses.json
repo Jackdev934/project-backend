@@ -1,0 +1,253 @@
+[
+  {
+    "id": 1,
+    "key": "gundyr",
+    "name": "Iudex Gundyr",
+    "label": "Iudex Gundyr",
+    "alt": "Iudex Gundyr",
+    "location": "Cemetery of Ash",
+    "isDlc": false,
+    "optional": false
+  },
+  {
+    "id": 2,
+    "key": "vordt",
+    "name": "Vordt of the Boreal Valley",
+    "label": "Vordt of the Boreal Valley",
+    "alt": "Vordt of the Boreal Valley",
+    "location": "High Wall of Lothric",
+    "isDlc": false,
+    "optional": false
+  },
+  {
+    "id": 3,
+    "key": "curse",
+    "name": "Curse-Rotted Greatwood",
+    "label": "Curse-Rotted Greatwood",
+    "alt": "Curse-Rotted Greatwood",
+    "location": "Undead Settlement",
+    "isDlc": false,
+    "optional": true
+  },
+  {
+    "id": 4,
+    "key": "crystal",
+    "name": "Crystal Sage",
+    "label": "Crystal Sage",
+    "alt": "Crystal Sage",
+    "location": "Road of Sacrifices",
+    "isDlc": false,
+    "optional": false
+  },
+  {
+    "id": 5,
+    "key": "deacon",
+    "name": "Deacons of the Deep",
+    "label": "Deacons of the Deep",
+    "alt": "Deacons of the Deep",
+    "location": "Cathedral of the Deep",
+    "isDlc": false,
+    "optional": false
+  },
+  {
+    "id": 6,
+    "key": "abyss",
+    "name": "Abyss Watchers",
+    "label": "Abyss Watchers",
+    "alt": "Abyss Watchers",
+    "location": "Farron Keep",
+    "isDlc": false,
+    "optional": false
+  },
+  {
+    "id": 7,
+    "key": "lord",
+    "name": "High Lord Wolnir",
+    "label": "High Lord Wolnir",
+    "alt": "High Lord Wolnir",
+    "location": "Catacombs of Carthus",
+    "isDlc": false,
+    "optional": false
+  },
+  {
+    "id": 8,
+    "key": "demonKing",
+    "name": "Old Demon King",
+    "label": "Old Demon King",
+    "alt": "Old Demon King",
+    "location": "Smouldering Lake",
+    "isDlc": false,
+    "optional": true
+  },
+  {
+    "id": 9,
+    "key": "pontiff",
+    "name": "Pontiff Sulyvan",
+    "label": "Pontiff Sulyvan",
+    "alt": "Pontiff Sulyvan",
+    "location": "Irithyll of the Boreal Valley",
+    "isDlc": false,
+    "optional": false
+  },
+  {
+    "id": 10,
+    "key": "yhorm",
+    "name": "Yhorm the Giant",
+    "label": "Yhorm the Giant",
+    "alt": "Yhorm the Giant",
+    "location": "Profaned Capital",
+    "isDlc": false,
+    "optional": false
+  },
+  {
+    "id": 11,
+    "key": "aldrich",
+    "name": "Aldrich, Devourer of Gods",
+    "label": "Aldrich, Devourer of Gods",
+    "alt": "Aldrich, Devourer of Gods",
+    "location": "Anor Londo",
+    "isDlc": false,
+    "optional": false
+  },
+  {
+    "id": 12,
+    "key": "dancer",
+    "name": "Dancer of the Boreal Valley",
+    "label": "Dancer of the Boreal Valley",
+    "alt": "Dancer of the Boreal Valley",
+    "location": "High Wall of Lothric",
+    "isDlc": false,
+    "optional": false
+  },
+  {
+    "id": 13,
+    "key": "dragon",
+    "name": "Dragonslayer Armour",
+    "label": "Dragonslayer Armour",
+    "alt": "Dragonslayer Armour",
+    "location": "Lothric Castle",
+    "isDlc": false,
+    "optional": false
+  },
+  {
+    "id": 14,
+    "key": "oceiros",
+    "name": "Oceiros, the Consumed King",
+    "label": "Oceiros, the Consumed King",
+    "alt": "Oceiros, the Consumed King",
+    "location": "Consumed King's Garden",
+    "isDlc": false,
+    "optional": true
+  },
+  {
+    "id": 15,
+    "key": "cgundyr",
+    "name": "Champion Gundyr",
+    "label": "Champion Gundyr",
+    "alt": "Champion Gundyr",
+    "location": "Untended Graves",
+    "isDlc": false,
+    "optional": true
+  },
+  {
+    "id": 16,
+    "key": "twin",
+    "name": "Lothric and Lorian",
+    "label": "Lothric and Lorian",
+    "alt": "Lothric and Lorian",
+    "location": "Lothric Castle",
+    "isDlc": false,
+    "optional": false
+  },
+  {
+    "id": 17,
+    "key": "wyvern",
+    "name": "Ancient Wyvern",
+    "label": "Ancient Wyvern",
+    "alt": "Ancient Wyvern",
+    "location": "Archdragon Peak",
+    "isDlc": false,
+    "optional": true
+  },
+  {
+    "id": 18,
+    "key": "nameless",
+    "name": "Nameless King",
+    "label": "Nameless King",
+    "alt": "Nameless King",
+    "location": "Archdragon Peak",
+    "isDlc": false,
+    "optional": true
+  },
+  {
+    "id": 19,
+    "key": "soul",
+    "name": "Soul of Cinder",
+    "label": "Soul of Cinder",
+    "alt": "Soul of Cinder",
+    "location": "Kiln of the First Flame",
+    "isDlc": false,
+    "optional": false
+  },
+
+  {
+    "id": 20,
+    "key": "grave",
+    "name": "Champion's Gravetender & Greatwolf",
+    "label": "Champion's Gravetender & Greatwolf",
+    "alt": "Champion's Gravetender & Greatwolf",
+    "location": "Painted World of Ariandel",
+    "isDlc": true,
+    "optional": false
+  },
+  {
+    "id": 21,
+    "key": "sister",
+    "name": "Sister Friede",
+    "label": "Sister Friede",
+    "alt": "Sister Friede",
+    "location": "Painted World of Ariandel",
+    "isDlc": true,
+    "optional": false
+  },
+  {
+    "id": 22,
+    "key": "prince",
+    "name": "Demon Prince",
+    "label": "Demon Prince",
+    "alt": "Demon Prince",
+    "location": "Dreg Heap / Earthen Peak Ruins",
+    "isDlc": true,
+    "optional": false
+  },
+  {
+    "id": 23,
+    "key": "halflight",
+    "name": "Halflight, Spear of the Church",
+    "label": "Halflight, Spear of the Church",
+    "alt": "Halflight, Spear of the Church",
+    "location": "Church of Filianore",
+    "isDlc": true,
+    "optional": false
+  },
+  {
+    "id": 24,
+    "key": "midir",
+    "name": "Darkeater Midir",
+    "label": "Darkeater Midir",
+    "alt": "Darkeater Midir",
+    "location": "Ringed City",
+    "isDlc": true,
+    "optional": false
+  },
+  {
+    "id": 25,
+    "key": "gael",
+    "name": "Slave Knight Gael",
+    "label": "Slave Knight Gael",
+    "alt": "Slave Knight Gael",
+    "location": "The Ringed City",
+    "isDlc": true,
+    "optional": false
+  }
+]

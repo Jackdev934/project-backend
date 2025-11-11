@@ -1,0 +1,86 @@
+[
+  {
+    "area": "Kingdom of Lothric",
+    "name": "High Wall of Lothric",
+    "imgs": ["location images/high-wall.jpeg"],
+    "text": "The High Wall of Lothric stands as the first true barrier separating the outer world from the dying kingdom. Its towering battlements and dragon-scorched ruins symbolize the kingdom’s fall from grace. The undead wander its halls, remnants of the knights who once guarded the castle. From here, one can gaze upon the great spires of Lothric Castle itself."
+  },
+  {
+    "area": "Kingdom of Lothric",
+    "name": "Lothric Castle",
+    "imgs": ["location images/lothric-castle.jpeg"],
+    "text": "Lothric Castle is the heart of the crumbling kingdom, where the last of the royal line resided. Dragons circle above its spires as the heavens burn with dying fire. Once a seat of divine light, it has now become a fortress of ash and despair. The twin princes await within, guardians of the fading flame."
+  },
+  {
+    "area": "Kingdom of Lothric",
+    "name": "Grand Archives",
+    "imgs": ["location images/grand-archives.jpeg"],
+    "text": "The Grand Archives hold the kingdom’s ancient knowledge, sealed away under layers of wax and secrecy. Scholars who once sought enlightenment now wander as hollowed sorcerers. The air is thick with candle smoke, dust, and the scent of decaying scrolls. Magic, madness, and memory intertwine within its endless halls."
+  },
+  {
+    "area": "Undead Settlement",
+    "name": "Undead Settlement",
+    "imgs": ["location images/undead-settlement.jpeg"],
+    "text": "A decrepit village where the undead are gathered and disposed of in cruel ritual. The stench of rot lingers through broken streets and pyres of ash. Despite the misery, faint traces of human faith remain in the chapel ruins. It stands as a grim reflection of mankind’s attempt to control the curse of undeath."
+  },
+  {
+    "area": "Road of Sacrifices",
+    "name": "Road of Sacrifices",
+    "imgs": ["location images/road-of-sacrifices.jpeg"],
+    "text": "This twisted marshland marks the path once walked by pilgrims seeking the cathedral. The ground is soaked with old blood and the cries of beasts echo through the mist. Corrupted travelers and sorcerers now prowl the woods in madness. It is both a passage and a grave for those who dared to seek redemption."
+  },
+  {
+    "area": "Cathedral of the Deep",
+    "name": "Cathedral of the Deep",
+    "imgs": ["location images/cathedral-of-the-deep.jpeg"],
+    "text": "A grand cathedral dedicated to forgotten saints, now consumed by corruption and rot. Within its flooded halls rest the remnants of the Deep’s faithful. The deacons endlessly worship a twisted god of darkness, praying for salvation that never comes. Each corridor whispers the sins of those who sought purity through deceit."
+  },
+  {
+    "area": "Farron",
+    "name": "Farron Keep",
+    "imgs": ["location images/farron-keep.jpeg"],
+    "text": "Farron Keep is a poisonous swamp filled with the decaying remains of the Abyss Watchers. The air hums with decay, and the bog swallows all who step without care. Ruined towers jut from the mire like broken spears from an ancient war. Yet even here, flickering bonfires remind travelers of the unyielding link between fire and duty."
+  },
+  {
+    "area": "Irithyll",
+    "name": "Irithyll of the Boreal Valley",
+    "imgs": ["location images/irithyll.jpeg"],
+    "text": "A city of eternal moonlight, Irithyll shimmers with haunting beauty beneath the frozen sky. Silver towers and bridges stretch over a river of ice, hiding horrors beneath their elegance. Its people long ago pledged themselves to cold and shadow. Beneath its cathedrals, the darkness of Aldrich’s faith festers."
+  },
+  {
+    "area": "Irithyll",
+    "name": "Irithyll Dungeon",
+    "imgs": ["location images/irithyll-dungeon.jpeg"],
+    "text": "A vast underground prison that reeks of death and despair. Hollow screams echo through the barred corridors, watched by gaolers who drain the life from their victims. The air is suffocating, heavy with both mist and malice. Only the truly damned find themselves shackled in this pit of torment."
+  },
+  {
+    "area": "Anor Londo",
+    "name": "Anor Londo",
+    "imgs": ["location images/anor-londo.jpeg"],
+    "text": "Once the city of the gods, Anor Londo now lies in eerie twilight, its glory buried beneath dust and ruin. The divine architecture remains hauntingly beautiful, lit only by the pale moon. Shadows of old royalty linger, worshiped by a devoured deity’s followers. Here, the illusion of divinity fades, revealing the decay of all things holy."
+  },
+  {
+    "area": "Smouldering Lake",
+    "name": "Smouldering Lake",
+    "imgs": ["location images/smouldering-lake.jpeg"],
+    "text": "An underground cavern lit by rivers of lava and the skeletons of fallen demons. The echo of war still burns in its depths, where pyromancers and ancient beasts remain. Ash fills the air like snow, clinging to the remnants of the Chaos Flame. It is a tomb for the fire that once defied the gods."
+  },
+  {
+    "area": "Painted World of Ariandel",
+    "name": "Painted World of Ariandel",
+    "imgs": ["location images/painted-world.jpeg"],
+    "text": "A fragile world trapped within a painting, forever decaying under the weight of ash and frost. The snows never cease, burying both beauty and horror alike. Those who enter are cursed to fade with the painting itself. Yet in its heart lies a promise of renewal—should the flame be rekindled once more."
+  },
+  {
+    "area": "Dreg Heap",
+    "name": "Dreg Heap",
+    "imgs": ["location images/dreg-heap.jpeg"],
+    "text": "A collapsing mountain of time-worn ruins, where the remnants of countless eras have merged into one. The sky burns crimson as ash rains from above. Ghosts of civilizations long dead wander its broken spires. The Dreg Heap is the end of the world—where all things fall to dust."
+  },
+  {
+    "area": "The Ringed City",
+    "name": "The Ringed City",
+    "imgs": ["location images/ringed-city.jpeg"],
+    "text": "Hidden beyond the end of the world, the Ringed City is a kingdom bound in ancient sin. Its golden domes glisten under an eternal dusk, guarded by those cursed with immortality. Humanity’s dark soul whispers from beneath its streets. Here lies the final truth of fire and dark—the cradle and grave of all ages."
+  }
+]
