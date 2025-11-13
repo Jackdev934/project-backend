@@ -6,24 +6,14 @@ const path = require("path");
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// -------------------------
-// STATIC FILES (images)
-// -------------------------
-// Anything under public/images is reachable as /images/...
-// e.g. public/images/bosses/gundyr.jpg -> http://localhost:3001/images/bosses/gundyr.jpg
 app.use("/images", express.static(path.join(__dirname, "public", "images")));
 
-// -------------------------
-// LOAD DATA FROM public/data
-// -------------------------
 
-// Base boss list (name, label, isDlc, etc.)
+
 const bosses = require(path.join(__dirname, "public", "data", "bosses.json"));
 
-// Extra boss info keyed by boss name/label (imgs + text)
 const bossInfo = require(path.join(__dirname, "public", "data", "bossInfo.js"));
 
-// Full character info object keyed by name
 const charactersInfo = require(path.join(
   __dirname,
   "public",
@@ -31,7 +21,6 @@ const charactersInfo = require(path.join(
   "charactersInfo.js"
 ));
 
-// Full world/location info object keyed by name
 const worldInfo = require(path.join(
   __dirname,
   "public",
@@ -42,18 +31,12 @@ const worldInfo = require(path.join(
 app.use(cors());
 app.use(express.json());
 
-// -------------------------
-// ROOT TEST ROUTE
-// -------------------------
 app.get("/", (req, res) => {
   res.send("Dark Souls III API is running.");
 });
 
-// =========================
-//        BOSSES API
-// =========================
 
-// Helper to merge base boss list with bossInfo imgs + text
+// boss Api //
 const buildBossList = (onlyDlc = null) => {
   return bosses
     .filter((b) => {
@@ -90,12 +73,7 @@ app.get("/api/bosses/dlc", (req, res) => {
   res.json(combined);
 });
 
-// =========================
-//      CHARACTERS API
-// =========================
-
-// charactersInfo is an object keyed by name.
-// Convert to array so React can map over it.
+// CHARACTERS API //
 app.get("/api/characters", (req, res) => {
   try {
     const keys = Object.keys(charactersInfo || {});
@@ -115,11 +93,8 @@ app.get("/api/characters", (req, res) => {
   }
 });
 
-// =========================
-//        WORLDS API
-// =========================
+// WORLDS API //
 
-// worldInfo is an object keyed by location name.
 app.get("/api/worlds", (req, res) => {
   try {
     const keys = Object.keys(worldInfo || {});
@@ -139,9 +114,7 @@ app.get("/api/worlds", (req, res) => {
   }
 });
 
-// -------------------------
-// START SERVER
-// -------------------------
+// START SERVER // 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
