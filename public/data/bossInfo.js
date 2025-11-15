@@ -7,7 +7,7 @@ const bossInfo = {
     text: "Once a champion who arrived too late to link the fire, Gundyr is resurrected endlessly as a judge for Unkindled Ash. His hulking armor and halberd make him a formidable foe, and midway through the fight he becomes host to the writhing Pus of Man. Gundyr is resistant to poison and bleed but weak to fire and strike damage, making firebombs and blunt weapons highly effective."
   },
   "Vordt of the Boreal Valley": {
-    imgs: ["/images/bosses/vordt.jpg"],
+    imgs: ["/images/bosses/Vordt.jpg"],
     text: "A once-loyal knight transformed into a frost-driven beast, Vordt serves as a corrupted sentinel of the Boreal Valley. His savage charges and frostbite breath freeze unwary travelers. He resists frost and dark damage, but fire is especially effective against him, and he has moderate vulnerability to lightning."
   },
   "Curse-Rotted Greatwood": {
