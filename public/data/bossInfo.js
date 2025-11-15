@@ -59,7 +59,7 @@ const bossInfo = {
     text: "Driven mad by obsession with his imagined child Ocelotte, Oceiros clings to visions and desperation. His dragon-like form grants him frost and magic attacks. He resists magic but is weak to lightning and frostbite."
   },
   "Champion Gundyr": {
-    imgs: ["/images/bosses/cgundyr.jpg"],
+    imgs: ["/images/bosses/CGundyr.jpg"],
     text: "In another timeline, Gundyr succeeded in his task and became the Champion. This version is more aggressive, chaining relentless combos with punishing kicks and grabs. He resists bleed and poison but is weak to lightning and frost damage."
   },
   "Lothric and Lorian": {
