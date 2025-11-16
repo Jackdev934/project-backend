@@ -6,14 +6,16 @@ const path = require("path");
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// Static images
 app.use("/images", express.static(path.join(__dirname, "public", "images")));
 
+// ===== DATA REQUIRES =====
 
-
+// Bosses
 const bosses = require(path.join(__dirname, "public", "data", "bosses.json"));
-
 const bossInfo = require(path.join(__dirname, "public", "data", "bossInfo.js"));
 
+// Characters
 const charactersInfo = require(path.join(
   __dirname,
   "public",
@@ -21,11 +23,21 @@ const charactersInfo = require(path.join(
   "charactersInfo.js"
 ));
 
+// Worlds
 const worldInfo = require(path.join(
   __dirname,
   "public",
   "data",
   "worldInfo.js"
+));
+
+// Weapons (NEW)
+const weapons = require(path.join(__dirname, "public", "data", "weapons.json"));
+const weaponsInfo = require(path.join(
+  __dirname,
+  "public",
+  "data",
+  "weaponsInfo.js"
 ));
 
 app.use(cors());
@@ -36,7 +48,8 @@ app.get("/", (req, res) => {
 });
 
 
-// boss Api //
+// ========== BOSSES API ==========
+
 const buildBossList = (onlyDlc = null) => {
   return bosses
     .filter((b) => {
@@ -73,7 +86,9 @@ app.get("/api/bosses/dlc", (req, res) => {
   res.json(combined);
 });
 
-// CHARACTERS API //
+
+// ========== CHARACTERS API ==========
+
 app.get("/api/characters", (req, res) => {
   try {
     const keys = Object.keys(charactersInfo || {});
@@ -93,7 +108,8 @@ app.get("/api/characters", (req, res) => {
   }
 });
 
-// WORLDS API //
+
+// ========== WORLDS API ==========
 
 app.get("/api/worlds", (req, res) => {
   try {
@@ -114,7 +130,35 @@ app.get("/api/worlds", (req, res) => {
   }
 });
 
-// START SERVER // 
+
+// ========== WEAPONS API (NEW) ==========
+
+// Combine base weapon data with images + description
+const buildWeaponList = () => {
+  return weapons.map((w, index) => {
+    const info = weaponsInfo[w.label] || weaponsInfo[w.name] || {};
+    return {
+      id: index,
+      ...w,                           // label, name, category, subclass, type, scaling, requirements
+      imgs: info.imgs || [],          // from weaponsInfo
+      description: info.text || ""    // from weaponsInfo
+    };
+  });
+};
+
+// All weapons
+app.get("/api/weapons", (req, res) => {
+  try {
+    const list = buildWeaponList();
+    res.json(list);
+  } catch (e) {
+    console.error("Error building weapons list:", e);
+    res.status(500).json({ error: "Failed to build weapons list" });
+  }
+});
+
+
+// START SERVER
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });

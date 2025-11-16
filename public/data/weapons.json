@@ -1,0 +1,501 @@
+[
+  {
+    "label": "longsword",
+    "name": "Longsword",
+    "category": "Straight Swords",
+    "subclass": "Longswords",
+    "type": "Standard Straight Sword",
+    "scaling": "STR / DEX",
+    "requirements": "STR 10, DEX 10"
+  },
+  {
+    "label": "broadsword",
+    "name": "Broadsword",
+    "category": "Straight Swords",
+    "subclass": "Broadswords",
+    "type": "Slash-focused Straight Sword",
+    "scaling": "STR / DEX",
+    "requirements": "STR 11, DEX 10"
+  },
+  {
+    "label": "shortsword",
+    "name": "Shortsword",
+    "category": "Straight Swords",
+    "subclass": "Shortswords",
+    "type": "Light Straight Sword",
+    "scaling": "STR / DEX",
+    "requirements": "STR 8, DEX 11"
+  },
+
+  {
+    "label": "claymore",
+    "name": "Claymore",
+    "category": "Greatswords",
+    "subclass": "Standard",
+    "type": "Greatsword",
+    "scaling": "STR / DEX",
+    "requirements": "STR 16, DEX 13"
+  },
+  {
+    "label": "bk-gs",
+    "name": "Black Knight Greatsword",
+    "category": "Greatswords",
+    "subclass": "Unique",
+    "type": "Ultra Greatsword",
+    "scaling": "STR",
+    "requirements": "STR 30, DEX 18"
+  },
+
+  {
+    "label": "ultra",
+    "name": "Greatsword",
+    "category": "Ultra Greatswords",
+    "subclass": "Colossal",
+    "type": "Ultra Greatsword",
+    "scaling": "STR",
+    "requirements": "STR 28, DEX 10"
+  },
+  {
+    "label": "fume-ultra",
+    "name": "Fume Ultra Greatsword",
+    "category": "Ultra Greatswords",
+    "subclass": "Paired",
+    "type": "Ultra Greatsword",
+    "scaling": "STR",
+    "requirements": "STR 50, DEX 10"
+  },
+
+  {
+    "label": "scimitar",
+    "name": "Scimitar",
+    "category": "Curved Swords",
+    "subclass": "Light",
+    "type": "Curved Sword",
+    "scaling": "DEX",
+    "requirements": "STR 7, DEX 13"
+  },
+  {
+    "label": "carthus",
+    "name": "Carthus Shotel",
+    "category": "Curved Swords",
+    "subclass": "Heavy",
+    "type": "Curved Sword",
+    "scaling": "DEX",
+    "requirements": "STR 10, DEX 19"
+  },
+  {
+    "label": "sellsword",
+    "name": "Sellsword Twinblades",
+    "category": "Curved Swords",
+    "subclass": "Paired",
+    "type": "Paired Curved Swords",
+    "scaling": "DEX",
+    "requirements": "STR 10, DEX 16"
+  },
+
+  {
+    "label": "exile",
+    "name": "Exile Greatsword",
+    "category": "Curved Greatswords",
+    "subclass": "Heavy",
+    "type": "Curved Greatsword",
+    "scaling": "STR / DEX",
+    "requirements": "STR 24, DEX 16"
+  },
+  {
+    "label": "old-wolf",
+    "name": "Old Wolf Curved Sword",
+    "category": "Curved Greatswords",
+    "subclass": "Unique",
+    "type": "Curved Greatsword",
+    "scaling": "DEX / FTH",
+    "requirements": "STR 19, DEX 25"
+  },
+
+  {
+    "label": "uchi",
+    "name": "Uchigatana",
+    "category": "Katanas",
+    "subclass": "Standard",
+    "type": "Katana",
+    "scaling": "DEX",
+    "requirements": "STR 11, DEX 16"
+  },
+  {
+    "label": "black-blade",
+    "name": "Black Blade",
+    "category": "Katanas",
+    "subclass": "Unique",
+    "type": "Katana",
+    "scaling": "STR / DEX",
+    "requirements": "STR 18, DEX 18"
+  },
+
+  {
+    "label": "dagger",
+    "name": "Dagger",
+    "category": "Daggers",
+    "subclass": "Standard",
+    "type": "Dagger",
+    "scaling": "DEX",
+    "requirements": "STR 5, DEX 9"
+  },
+  {
+    "label": "brigand",
+    "name": "Brigand Twindaggers",
+    "category": "Daggers",
+    "subclass": "Paired",
+    "type": "Paired Daggers",
+    "scaling": "DEX",
+    "requirements": "STR 10, DEX 18"
+  },
+  {
+    "label": "mail-breaker",
+    "name": "Mail Breaker",
+    "category": "Daggers",
+    "subclass": "Unique",
+    "type": "Piercing Dagger",
+    "scaling": "DEX",
+    "requirements": "STR 7, DEX 12"
+  },
+
+  {
+    "label": "rapier",
+    "name": "Rapier",
+    "category": "Thrusting Swords",
+    "subclass": "Standard",
+    "type": "Thrusting Sword",
+    "scaling": "DEX",
+    "requirements": "STR 7, DEX 12"
+  },
+  {
+    "label": "ricards",
+    "name": "Ricard's Rapier",
+    "category": "Thrusting Swords",
+    "subclass": "Special",
+    "type": "Thrusting Sword",
+    "scaling": "DEX",
+    "requirements": "STR 8, DEX 18"
+  },
+
+  {
+    "label": "hand-axe",
+    "name": "Hand Axe",
+    "category": "Axes",
+    "subclass": "Small",
+    "type": "Axe",
+    "scaling": "STR",
+    "requirements": "STR 9, DEX 8"
+  },
+  {
+    "label": "battle-axe",
+    "name": "Battle Axe",
+    "category": "Axes",
+    "subclass": "Large",
+    "type": "Axe",
+    "scaling": "STR",
+    "requirements": "STR 12, DEX 8"
+  },
+  {
+    "label": "dragon-axe",
+    "name": "Dragon King Greataxe",
+    "category": "Axes",
+    "subclass": "Unique",
+    "type": "Greataxe",
+    "scaling": "STR",
+    "requirements": "STR 24, DEX 10"
+  },
+
+  {
+    "label": "greataxe",
+    "name": "Greataxe",
+    "category": "Greataxes",
+    "subclass": "Standard",
+    "type": "Greataxe",
+    "scaling": "STR",
+    "requirements": "STR 28, DEX 10"
+  },
+  {
+    "label": "black-knight-greataxe",
+    "name": "Black Knight Greataxe",
+    "category": "Greataxes",
+    "subclass": "Unique",
+    "type": "Greataxe",
+    "scaling": "STR",
+    "requirements": "STR 36, DEX 18"
+  },
+
+  {
+    "label": "club",
+    "name": "Club",
+    "category": "Hammers",
+    "subclass": "Standard",
+    "type": "Hammer",
+    "scaling": "STR",
+    "requirements": "STR 8"
+  },
+  {
+    "label": "warpick",
+    "name": "Warpick",
+    "category": "Hammers",
+    "subclass": "Unique",
+    "type": "Hammer",
+    "scaling": "STR",
+    "requirements": "STR 11, DEX 8"
+  },
+
+  {
+    "label": "great-club",
+    "name": "Great Club",
+    "category": "Greathammers",
+    "subclass": "Colossal",
+    "type": "Greathammer",
+    "scaling": "STR",
+    "requirements": "STR 28"
+  },
+  {
+    "label": "dragon-tooth",
+    "name": "Dragon Tooth",
+    "category": "Greathammers",
+    "subclass": "Unique",
+    "type": "Greathammer",
+    "scaling": "STR",
+    "requirements": "STR 40"
+  },
+
+  {
+    "label": "spear",
+    "name": "Spear",
+    "category": "Spears & Pikes",
+    "subclass": "Spears",
+    "type": "Spear",
+    "scaling": "STR / DEX",
+    "requirements": "STR 11, DEX 10"
+  },
+  {
+    "label": "pike",
+    "name": "Pike",
+    "category": "Spears & Pikes",
+    "subclass": "Pikes",
+    "type": "Pike",
+    "scaling": "STR / DEX",
+    "requirements": "STR 14, DEX 12"
+  },
+  {
+    "label": "dragonslayer",
+    "name": "Dragonslayer Swordspear",
+    "category": "Spears & Pikes",
+    "subclass": "Paired",
+    "type": "Spear / Greatsword Hybrid",
+    "scaling": "STR / DEX / FTH",
+    "requirements": "STR 24, DEX 22, FTH 18"
+  },
+
+  {
+    "label": "halberd",
+    "name": "Halberd",
+    "category": "Halberds",
+    "subclass": "Standard",
+    "type": "Halberd",
+    "scaling": "STR / DEX",
+    "requirements": "STR 16, DEX 12"
+  },
+  {
+    "label": "glaive",
+    "name": "Black Knight Glaive",
+    "category": "Halberds",
+    "subclass": "Special",
+    "type": "Halberd",
+    "scaling": "STR / DEX",
+    "requirements": "STR 28, DEX 18"
+  },
+
+  {
+    "label": "great-scythe",
+    "name": "Great Scythe",
+    "category": "Reapers",
+    "subclass": "Scythes",
+    "type": "Reaper",
+    "scaling": "DEX",
+    "requirements": "STR 14, DEX 14"
+  },
+  {
+    "label": "corvian",
+    "name": "Great Corvian Scythe",
+    "category": "Reapers",
+    "subclass": "Unique",
+    "type": "Reaper",
+    "scaling": "DEX / INT",
+    "requirements": "STR 16, DEX 16"
+  },
+
+  {
+    "label": "whip",
+    "name": "Whip",
+    "category": "Whips",
+    "subclass": "Standard",
+    "type": "Whip",
+    "scaling": "DEX",
+    "requirements": "STR 5, DEX 14"
+  },
+  {
+    "label": "spotted-whip",
+    "name": "Spotted Whip",
+    "category": "Whips",
+    "subclass": "Unique",
+    "type": "Whip",
+    "scaling": "DEX",
+    "requirements": "STR 8, DEX 18"
+  },
+
+  {
+    "label": "caestus",
+    "name": "Caestus",
+    "category": "Fists & Claws",
+    "subclass": "Fist",
+    "type": "Fist",
+    "scaling": "STR / DEX",
+    "requirements": "STR 7, DEX 7"
+  },
+  {
+    "label": "claw",
+    "name": "Claw",
+    "category": "Fists & Claws",
+    "subclass": "Claws",
+    "type": "Claw",
+    "scaling": "DEX",
+    "requirements": "STR 8, DEX 16"
+  },
+
+  {
+    "label": "short-bow",
+    "name": "Short Bow",
+    "category": "Bows",
+    "subclass": "Short",
+    "type": "Bow",
+    "scaling": "DEX",
+    "requirements": "STR 7, DEX 12"
+  },
+  {
+    "label": "longbow",
+    "name": "Longbow",
+    "category": "Bows",
+    "subclass": "Long",
+    "type": "Bow",
+    "scaling": "DEX",
+    "requirements": "STR 10, DEX 14"
+  },
+  {
+    "label": "dragonrider-bow",
+    "name": "Dragonrider Bow",
+    "category": "Bows",
+    "subclass": "Great",
+    "type": "Greatbow",
+    "scaling": "STR / DEX",
+    "requirements": "STR 18, DEX 18"
+  },
+
+  {
+    "label": "light-crossbow",
+    "name": "Light Crossbow",
+    "category": "Crossbows",
+    "subclass": "Light",
+    "type": "Crossbow",
+    "scaling": "-",
+    "requirements": "STR 10, DEX 10"
+  },
+  {
+    "label": "avelyn",
+    "name": "Avelyn",
+    "category": "Crossbows",
+    "subclass": "Unique",
+    "type": "Repeating Crossbow",
+    "scaling": "-",
+    "requirements": "STR 18, DEX 18"
+  },
+
+  {
+    "label": "sorcerer-staff",
+    "name": "Sorcerer's Staff",
+    "category": "Staves",
+    "subclass": "Basic",
+    "type": "Catalyst",
+    "scaling": "INT",
+    "requirements": "STR 6, INT 10"
+  },
+  {
+    "label": "medicants-staff",
+    "name": "Medicant's Staff",
+    "category": "Staves",
+    "subclass": "Unique",
+    "type": "Catalyst",
+    "scaling": "INT / FTH",
+    "requirements": "STR 8, INT 12, FTH 12"
+  },
+
+  {
+    "label": "cleric-chime",
+    "name": "Cleric's Sacred Chime",
+    "category": "Chimes / Talismans",
+    "subclass": "Basic",
+    "type": "Sacred Chime",
+    "scaling": "FTH",
+    "requirements": "FTH 10"
+  },
+  {
+    "label": "saints-talisman",
+    "name": "Saint's Talisman",
+    "category": "Chimes / Talismans",
+    "subclass": "Unique",
+    "type": "Talisman",
+    "scaling": "FTH",
+    "requirements": "FTH 14"
+  },
+
+  {
+    "label": "pyro-flame",
+    "name": "Pyromancer’s Parting Flame",
+    "category": "Pyromancies",
+    "subclass": "Standard",
+    "type": "Pyromancy Flame",
+    "scaling": "INT / FTH",
+    "requirements": "INT 12, FTH 12"
+  },
+  {
+    "label": "demons-scar",
+    "name": "Demon’s Scar",
+    "category": "Pyromancies",
+    "subclass": "Unique",
+    "type": "Pyromancy Flame / Curved Sword",
+    "scaling": "INT / FTH / DEX",
+    "requirements": "STR 16, DEX 17, INT 16, FTH 17"
+  },
+
+  {
+    "label": "small-shield",
+    "name": "Small Leather Shield",
+    "category": "Shields",
+    "subclass": "Small",
+    "type": "Small Shield",
+    "scaling": "-",
+    "requirements": "STR 8, DEX 8"
+  },
+  {
+    "label": "kite-shield",
+    "name": "Kite Shield",
+    "category": "Shields",
+    "subclass": "Medium",
+    "type": "Medium Shield",
+    "scaling": "-",
+    "requirements": "STR 10"
+  },
+  {
+    "label": "greatshield",
+    "name": "Greatshield of Glory",
+    "category": "Shields",
+    "subclass": "Great",
+    "type": "Greatshield",
+    "scaling": "STR",
+    "requirements": "STR 32"
+  }
+]
