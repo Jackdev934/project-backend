@@ -290,7 +290,7 @@ module.exports = {
       "A pyromancy flame that scatters embers upon death. Balances power and style for veteran pyromancers."
   },
   "demons-scar": {
-    imgs: ["/images/weapons/pyromancy/unique/demons_scar.png"],
+    imgs: ["/images/weapons/pyromancy/unique/demon's_scar.png"],
     text:
       "A unique flame that doubles as a curved sword. Allows seamless switching between spells and slashes."
   },

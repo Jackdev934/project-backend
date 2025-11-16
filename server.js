@@ -31,13 +31,13 @@ const worldInfo = require(path.join(
   "worldInfo.js"
 ));
 
-// Weapons (NEW)
+// Weapons (NEW - FIXED)
 const weapons = require(path.join(__dirname, "public", "data", "weapons.json"));
 const weaponsInfo = require(path.join(
   __dirname,
   "public",
   "data",
-  "weaponsInfo.js"
+  "weapons.js"      // <---- FIXED FILE NAME
 ));
 
 app.use(cors());
@@ -47,15 +47,14 @@ app.get("/", (req, res) => {
   res.send("Dark Souls III API is running.");
 });
 
-
 // ========== BOSSES API ==========
 
 const buildBossList = (onlyDlc = null) => {
   return bosses
     .filter((b) => {
-      if (onlyDlc === null) return true;      // all
-      if (onlyDlc === true) return !!b.isDlc; // only DLC
-      return !b.isDlc;                        // only main game
+      if (onlyDlc === null) return true;
+      if (onlyDlc === true) return !!b.isDlc;
+      return !b.isDlc;
     })
     .map((boss, index) => {
       const lore = bossInfo[boss.label] || bossInfo[boss.name] || {};
@@ -68,24 +67,17 @@ const buildBossList = (onlyDlc = null) => {
     });
 };
 
-// All bosses
 app.get("/api/bosses", (req, res) => {
-  const combined = buildBossList(null);
-  res.json(combined);
+  res.json(buildBossList(null));
 });
 
-// Main-game bosses only
 app.get("/api/bosses/main", (req, res) => {
-  const combined = buildBossList(false);
-  res.json(combined);
+  res.json(buildBossList(false));
 });
 
-// DLC bosses only
 app.get("/api/bosses/dlc", (req, res) => {
-  const combined = buildBossList(true);
-  res.json(combined);
+  res.json(buildBossList(true));
 });
-
 
 // ========== CHARACTERS API ==========
 
@@ -94,11 +86,7 @@ app.get("/api/characters", (req, res) => {
     const keys = Object.keys(charactersInfo || {});
     const list = keys.map((name, index) => {
       const info = charactersInfo[name];
-      return {
-        id: index,
-        name,
-        ...info, // area, imgs, text
-      };
+      return { id: index, name, ...info };
     });
 
     res.json(list);
@@ -108,7 +96,6 @@ app.get("/api/characters", (req, res) => {
   }
 });
 
-
 // ========== WORLDS API ==========
 
 app.get("/api/worlds", (req, res) => {
@@ -116,11 +103,7 @@ app.get("/api/worlds", (req, res) => {
     const keys = Object.keys(worldInfo || {});
     const list = keys.map((name, index) => {
       const info = worldInfo[name];
-      return {
-        id: index,
-        name,
-        ...info, // isDlc, imgs, text
-      };
+      return { id: index, name, ...info };
     });
 
     res.json(list);
@@ -130,33 +113,28 @@ app.get("/api/worlds", (req, res) => {
   }
 });
 
+// ========== WEAPONS API ==========
 
-// ========== WEAPONS API (NEW) ==========
-
-// Combine base weapon data with images + description
 const buildWeaponList = () => {
   return weapons.map((w, index) => {
     const info = weaponsInfo[w.label] || weaponsInfo[w.name] || {};
     return {
       id: index,
-      ...w,                           // label, name, category, subclass, type, scaling, requirements
-      imgs: info.imgs || [],          // from weaponsInfo
-      description: info.text || ""    // from weaponsInfo
+      ...w,
+      imgs: info.imgs || [],
+      description: info.text || ""
     };
   });
 };
 
-// All weapons
 app.get("/api/weapons", (req, res) => {
   try {
-    const list = buildWeaponList();
-    res.json(list);
+    res.json(buildWeaponList());
   } catch (e) {
     console.error("Error building weapons list:", e);
     res.status(500).json({ error: "Failed to build weapons list" });
   }
 });
-
 
 // START SERVER
 app.listen(PORT, () => {
