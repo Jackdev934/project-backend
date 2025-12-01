@@ -7,7 +7,6 @@ const Joi = require("joi");
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Static images
 app.use("/images", express.static(path.join(__dirname, "public", "images")));
 
 app.use(cors());
@@ -15,11 +14,9 @@ app.use(express.json());
 
 // ===== DATA REQUIRES =====
 
-// Bosses
 const bosses = require(path.join(__dirname, "public", "data", "bosses.json"));
 const bossInfo = require(path.join(__dirname, "public", "data", "bossInfo.js"));
 
-// Characters
 const charactersInfo = require(path.join(
   __dirname,
   "public",
@@ -27,7 +24,6 @@ const charactersInfo = require(path.join(
   "charactersInfo.js"
 ));
 
-// Worlds
 const worldInfo = require(path.join(
   __dirname,
   "public",
@@ -35,7 +31,6 @@ const worldInfo = require(path.join(
   "worldInfo.js"
 ));
 
-// Weapons
 const weapons = require(path.join(
   __dirname,
   "public",
@@ -49,13 +44,9 @@ const weaponsInfo = require(path.join(
   "weapons.js"
 ));
 
-// ===== COMMUNITY ART (in-memory) =====
-// This holds user-submitted community art while the server is running.
-// (Like weapons, this is not persisted back to a file.)
 const communityArt = [];
 let nextCommunityId = 1;
 
-// Ensure each weapon has an id
 let nextWeaponId = 1;
 weapons.forEach((w, index) => {
   if (w.id == null) {
@@ -66,8 +57,6 @@ weapons.forEach((w, index) => {
   }
 });
 
-// ===== JOI SCHEMA FOR WEAPONS =====
-
 const weaponSchema = Joi.object({
   name: Joi.string().required(),
   label: Joi.string().required(),
@@ -77,14 +66,25 @@ const weaponSchema = Joi.object({
   scaling: Joi.string().required(),
   requirements: Joi.string().required(),
   description: Joi.string().required(),
-  img: Joi.string().required() // path like "/images/weapons/..."
+  img: Joi.string().required()
 });
 
-// ===== JOI SCHEMA FOR COMMUNITY ART =====
-// Very simple: user gives a title + image URL/path.
+// NEW: schema used for editing an existing weapon (no label/category/subclass/img required)
+const weaponUpdateSchema = Joi.object({
+  name: Joi.string().required(),
+  type: Joi.string().required(),
+  scaling: Joi.string().required(),
+  requirements: Joi.string().required(),
+  description: Joi.string().required()
+});
+
 const communityArtSchema = Joi.object({
   title: Joi.string().required(),
-  imageUrl: Joi.string().required() // can be http URL or /images/... path
+  imageUrl: Joi.string().required()
+});
+
+const communityUpdateSchema = Joi.object({
+  title: Joi.string().required()
 });
 
 // ===== ROOT =====
@@ -98,9 +98,9 @@ app.get("/", (req, res) => {
 const buildBossList = (onlyDlc = null) => {
   return bosses
     .filter((b) => {
-      if (onlyDlc === null) return true; // all
-      if (onlyDlc === true) return !!b.isDlc; // only DLC
-      return !b.isDlc; // only main game
+      if (onlyDlc === null) return true;
+      if (onlyDlc === true) return !!b.isDlc;
+      return !b.isDlc;
     })
     .map((boss, index) => {
       const lore = bossInfo[boss.label] || bossInfo[boss.name] || {};
@@ -113,19 +113,16 @@ const buildBossList = (onlyDlc = null) => {
     });
 };
 
-// All bosses
 app.get("/api/bosses", (req, res) => {
   const combined = buildBossList(null);
   res.json(combined);
 });
 
-// Main-game bosses only
 app.get("/api/bosses/main", (req, res) => {
   const combined = buildBossList(false);
   res.json(combined);
 });
 
-// DLC bosses only
 app.get("/api/bosses/dlc", (req, res) => {
   const combined = buildBossList(true);
   res.json(combined);
@@ -141,7 +138,7 @@ app.get("/api/characters", (req, res) => {
       return {
         id: index,
         name,
-        ...info // area, imgs, text
+        ...info
       };
     });
 
@@ -162,7 +159,7 @@ app.get("/api/worlds", (req, res) => {
       return {
         id: index,
         name,
-        ...info // isDlc, imgs, text
+        ...info
       };
     });
 
@@ -175,7 +172,6 @@ app.get("/api/worlds", (req, res) => {
 
 // ========== WEAPONS API ==========
 
-// Combine base weapon data with images + description
 const buildWeaponList = () => {
   return weapons.map((w) => {
     const info = weaponsInfo[w.label] || weaponsInfo[w.name] || {};
@@ -197,7 +193,6 @@ const buildWeaponList = () => {
   });
 };
 
-// GET: All weapons
 app.get("/api/weapons", (req, res) => {
   try {
     const list = buildWeaponList();
@@ -208,7 +203,6 @@ app.get("/api/weapons", (req, res) => {
   }
 });
 
-// POST: Add a new weapon
 app.post("/api/weapons", (req, res) => {
   const { error, value } = weaponSchema.validate(req.body, {
     abortEarly: false,
@@ -238,7 +232,47 @@ app.post("/api/weapons", (req, res) => {
   });
 });
 
-// DELETE: Remove a weapon by id
+// NEW: update an existing weapon (used by your Save Edit button)
+app.put("/api/weapons/:id", (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  const index = weapons.findIndex((w) => w.id === id);
+
+  if (index === -1) {
+    return res.status(404).json({
+      ok: false,
+      message: "Weapon not found"
+    });
+  }
+
+  const { error, value } = weaponUpdateSchema.validate(req.body, {
+    abortEarly: false,
+    stripUnknown: true
+  });
+
+  if (error) {
+    return res.status(400).json({
+      ok: false,
+      message: "Validation failed",
+      details: error.details.map((d) => d.message)
+    });
+  }
+
+  weapons[index] = {
+    ...weapons[index],
+    name: value.name,
+    type: value.type,
+    scaling: value.scaling,
+    requirements: value.requirements,
+    description: value.description
+  };
+
+  return res.json({
+    ok: true,
+    message: "Weapon updated successfully",
+    weapon: weapons[index]
+  });
+});
+
 app.delete("/api/weapons/:id", (req, res) => {
   const id = parseInt(req.params.id, 10);
 
@@ -262,12 +296,10 @@ app.delete("/api/weapons/:id", (req, res) => {
 
 // ========== COMMUNITY ART API ==========
 
-// GET: all community submissions
 app.get("/api/community-art", (req, res) => {
   res.json(communityArt);
 });
 
-// POST: add a new community art entry
 app.post("/api/community-art", (req, res) => {
   const { error, value } = communityArtSchema.validate(req.body, {
     abortEarly: false,
@@ -296,9 +328,59 @@ app.post("/api/community-art", (req, res) => {
   });
 });
 
-// (Optional later) DELETE /api/community-art/:id if you want removals
+app.put("/api/community-art/:id", (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  const index = communityArt.findIndex((a) => a.id === id);
 
-// START SERVER
+  if (index === -1) {
+    return res.status(404).json({
+      ok: false,
+      message: "Artwork not found"
+    });
+  }
+
+  const { error, value } = communityUpdateSchema.validate(req.body, {
+    abortEarly: false,
+    stripUnknown: true
+  });
+
+  if (error) {
+    return res.status(400).json({
+      ok: false,
+      message: "Validation failed",
+      details: error.details.map((d) => d.message)
+    });
+  }
+
+  communityArt[index].title = value.title;
+
+  return res.json({
+    ok: true,
+    message: "Artwork updated successfully",
+    art: communityArt[index]
+  });
+});
+
+app.delete("/api/community-art/:id", (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  const index = communityArt.findIndex((a) => a.id === id);
+
+  if (index === -1) {
+    return res.status(404).json({
+      ok: false,
+      message: "Artwork not found"
+    });
+  }
+
+  const removed = communityArt.splice(index, 1)[0];
+
+  return res.json({
+    ok: true,
+    message: "Artwork removed successfully",
+    art: removed
+  });
+});
+
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
