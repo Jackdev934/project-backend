@@ -1,19 +1,18 @@
 // server.js
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
 const Joi = require("joi");
+const mongoose = require("mongoose");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-app.use("/images", express.static(path.join(__dirname, "public", "images")));
+const MONGODB_URI =
+  process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/ds3db";
 
-app.use(cors());
-app.use(express.json());
-
-// ===== DATA REQUIRES =====
-
+// ===== STATIC DATA (for lore + seeding) =====
 const bosses = require(path.join(__dirname, "public", "data", "bosses.json"));
 const bossInfo = require(path.join(__dirname, "public", "data", "bossInfo.js"));
 
@@ -31,12 +30,6 @@ const worldInfo = require(path.join(
   "worldInfo.js"
 ));
 
-const weapons = require(path.join(
-  __dirname,
-  "public",
-  "data",
-  "weapons.json"
-));
 const weaponsInfo = require(path.join(
   __dirname,
   "public",
@@ -44,18 +37,59 @@ const weaponsInfo = require(path.join(
   "weapons.js"
 ));
 
-const communityArt = [];
-let nextCommunityId = 1;
+const baseWeapons = require(path.join(
+  __dirname,
+  "public",
+  "data",
+  "weapons.json"
+));
 
-let nextWeaponId = 1;
-weapons.forEach((w, index) => {
-  if (w.id == null) {
-    w.id = index + 1;
-  }
-  if (typeof w.id === "number" && w.id >= nextWeaponId) {
-    nextWeaponId = w.id + 1;
-  }
-});
+// ===== MONGOOSE CONNECT =====
+mongoose
+  .connect(MONGODB_URI)
+  .then(async () => {
+    console.log("Connected to MongoDB");
+    await seedWeaponsIfEmpty();
+  })
+  .catch((err) => console.error("MongoDB connection error:", err));
+
+app.use("/images", express.static(path.join(__dirname, "public", "images")));
+
+app.use(cors());
+app.use(express.json());
+
+// ===== MONGOOSE SCHEMAS / MODELS =====
+
+const weaponMongoSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true },
+    label: { type: String, required: true },
+    category: { type: String, required: true },
+    subclass: { type: String, required: true },
+    type: { type: String, required: true },
+    scaling: { type: String, required: true },
+    requirements: { type: String, required: true },
+    description: { type: String, required: true },
+    // img is now OPTIONAL so seeding doesn’t fail if some entries have no image
+    img: { type: String, required: false, default: "" },
+    imgs: [String]
+  },
+  { timestamps: true }
+);
+
+const Weapon = mongoose.model("Weapon", weaponMongoSchema);
+
+const communityArtMongoSchema = new mongoose.Schema(
+  {
+    title: { type: String, required: true },
+    imageUrl: { type: String, required: true }
+  },
+  { timestamps: true }
+);
+
+const CommunityArt = mongoose.model("CommunityArt", communityArtMongoSchema);
+
+// ===== JOI SCHEMAS =====
 
 const weaponSchema = Joi.object({
   name: Joi.string().required(),
@@ -69,7 +103,6 @@ const weaponSchema = Joi.object({
   img: Joi.string().required()
 });
 
-// UPDATED: allow optional img on update so we can change the weapon image
 const weaponUpdateSchema = Joi.object({
   name: Joi.string().required(),
   type: Joi.string().required(),
@@ -84,11 +117,53 @@ const communityArtSchema = Joi.object({
   imageUrl: Joi.string().required()
 });
 
-// UPDATED: allow optional imageUrl on community edit
 const communityUpdateSchema = Joi.object({
   title: Joi.string().required(),
   imageUrl: Joi.string().optional()
 });
+
+// ===== SEEDING FUNCTION =====
+
+async function seedWeaponsIfEmpty() {
+  try {
+    const count = await Weapon.countDocuments();
+    if (count > 0) {
+      return;
+    }
+
+    console.log("Weapons collection empty – seeding from weapons.json...");
+
+    const docs = baseWeapons.map((w) => {
+      const info = weaponsInfo[w.label] || weaponsInfo[w.name] || {};
+      const imgsFromInfo = info.imgs || [];
+      const imgsFromWeapon = w.imgs || (w.img ? [w.img] : []);
+      const imgs = imgsFromWeapon.length ? imgsFromWeapon : imgsFromInfo;
+      const primaryImg = imgs[0] || "";
+
+      return {
+        name: w.name,
+        label: w.label,
+        category: w.category,
+        subclass: w.subclass,
+        type: w.type,
+        scaling: w.scaling,
+        requirements: w.requirements,
+        description: w.description || info.text || "",
+        img: primaryImg,
+        imgs
+      };
+    });
+
+    if (docs.length > 0) {
+      await Weapon.insertMany(docs);
+      console.log(`Seeded ${docs.length} weapons into MongoDB.`);
+    } else {
+      console.log("No base weapons found to seed.");
+    }
+  } catch (err) {
+    console.error("Error seeding weapons:", err);
+  }
+}
 
 // ===== ROOT =====
 
@@ -173,16 +248,19 @@ app.get("/api/worlds", (req, res) => {
   }
 });
 
-// ========== WEAPONS API ==========
+// ========== WEAPONS API (MongoDB) ==========
 
-const buildWeaponList = () => {
-  return weapons.map((w) => {
+const buildWeaponList = async () => {
+  const docs = await Weapon.find().lean();
+
+  return docs.map((w) => {
     const info = weaponsInfo[w.label] || weaponsInfo[w.name] || {};
     const imgsFromInfo = info.imgs || [];
-    const imgsFromWeapon = w.imgs || (w.img ? [w.img] : []);
+    const imgsFromWeapon =
+      (w.imgs && w.imgs.length > 0 && w.imgs) || (w.img ? [w.img] : []);
 
     return {
-      id: w.id,
+      id: w._id.toString(),
       name: w.name,
       label: w.label,
       category: w.category,
@@ -196,9 +274,9 @@ const buildWeaponList = () => {
   });
 };
 
-app.get("/api/weapons", (req, res) => {
+app.get("/api/weapons", async (req, res) => {
   try {
-    const list = buildWeaponList();
+    const list = await buildWeaponList();
     res.json(list);
   } catch (e) {
     console.error("Error building weapons list:", e);
@@ -206,7 +284,7 @@ app.get("/api/weapons", (req, res) => {
   }
 });
 
-app.post("/api/weapons", (req, res) => {
+app.post("/api/weapons", async (req, res) => {
   const { error, value } = weaponSchema.validate(req.body, {
     abortEarly: false,
     stripUnknown: true
@@ -220,33 +298,40 @@ app.post("/api/weapons", (req, res) => {
     });
   }
 
-  const newWeapon = {
-    id: nextWeaponId++,
-    ...value,
-    imgs: value.imgs || (value.img ? [value.img] : [])
-  };
+  try {
+    const imgs = value.imgs || (value.img ? [value.img] : []);
+    const created = await Weapon.create({
+      ...value,
+      imgs
+    });
 
-  weapons.push(newWeapon);
-
-  return res.status(201).json({
-    ok: true,
-    message: "Weapon added successfully",
-    weapon: newWeapon
-  });
-});
-
-// UPDATED: update weapon, including optional img field
-app.put("/api/weapons/:id", (req, res) => {
-  const id = parseInt(req.params.id, 10);
-  const index = weapons.findIndex((w) => w.id === id);
-
-  if (index === -1) {
-    return res.status(404).json({
+    return res.status(201).json({
+      ok: true,
+      message: "Weapon added successfully",
+      weapon: {
+        id: created._id.toString(),
+        name: created.name,
+        label: created.label,
+        category: created.category,
+        subclass: created.subclass,
+        type: created.type,
+        scaling: created.scaling,
+        requirements: created.requirements,
+        description: created.description,
+        img: created.img,
+        imgs: created.imgs
+      }
+    });
+  } catch (e) {
+    console.error("Error creating weapon:", e);
+    return res.status(500).json({
       ok: false,
-      message: "Weapon not found"
+      message: "Failed to create weapon"
     });
   }
+});
 
+app.put("/api/weapons/:id", async (req, res) => {
   const { error, value } = weaponUpdateSchema.validate(req.body, {
     abortEarly: false,
     stripUnknown: true
@@ -260,9 +345,9 @@ app.put("/api/weapons/:id", (req, res) => {
     });
   }
 
-  // Always update text fields
-  weapons[index] = {
-    ...weapons[index],
+  const id = req.params.id;
+
+  const update = {
     name: value.name,
     type: value.type,
     scaling: value.scaling,
@@ -270,47 +355,103 @@ app.put("/api/weapons/:id", (req, res) => {
     description: value.description
   };
 
-  // If an img was provided in the update, update img + imgs array
   if (value.img) {
-    weapons[index].img = value.img;
-    weapons[index].imgs = [value.img];
+    update.img = value.img;
+    update.imgs = [value.img];
   }
 
-  return res.json({
-    ok: true,
-    message: "Weapon updated successfully",
-    weapon: weapons[index]
-  });
-});
+  try {
+    const updated = await Weapon.findByIdAndUpdate(id, update, {
+      new: true
+    }).lean();
 
-app.delete("/api/weapons/:id", (req, res) => {
-  const id = parseInt(req.params.id, 10);
+    if (!updated) {
+      return res.status(404).json({
+        ok: false,
+        message: "Weapon not found"
+      });
+    }
 
-  const index = weapons.findIndex((w) => w.id === id);
-
-  if (index === -1) {
-    return res.status(404).json({
+    return res.json({
+      ok: true,
+      message: "Weapon updated successfully",
+      weapon: {
+        id: updated._id.toString(),
+        name: updated.name,
+        label: updated.label,
+        category: updated.category,
+        subclass: updated.subclass,
+        type: updated.type,
+        scaling: updated.scaling,
+        requirements: updated.requirements,
+        description: updated.description,
+        img: updated.img,
+        imgs: updated.imgs
+      }
+    });
+  } catch (e) {
+    console.error("Error updating weapon:", e);
+    return res.status(500).json({
       ok: false,
-      message: "Weapon not found"
+      message: "Failed to update weapon"
     });
   }
-
-  const removed = weapons.splice(index, 1)[0];
-
-  return res.json({
-    ok: true,
-    message: "Weapon removed successfully",
-    weapon: removed
-  });
 });
 
-// ========== COMMUNITY ART API ==========
+app.delete("/api/weapons/:id", async (req, res) => {
+  const id = req.params.id;
 
-app.get("/api/community-art", (req, res) => {
-  res.json(communityArt);
+  try {
+    const removed = await Weapon.findByIdAndDelete(id).lean();
+
+    if (!removed) {
+      return res.status(404).json({
+        ok: false,
+        message: "Weapon not found"
+      });
+    }
+
+    return res.json({
+      ok: true,
+      message: "Weapon removed successfully",
+      weapon: {
+        id: removed._id.toString(),
+        name: removed.name,
+        label: removed.label,
+        category: removed.category,
+        subclass: removed.subclass,
+        type: removed.type,
+        scaling: removed.scaling,
+        requirements: removed.requirements,
+        description: removed.description,
+        img: removed.img,
+        imgs: removed.imgs
+      }
+    });
+  } catch (e) {
+    console.error("Error deleting weapon:", e);
+    return res.status(500).json({
+      ok: false,
+      message: "Failed to delete weapon"
+    });
+  }
 });
 
-app.post("/api/community-art", (req, res) => {
+// ========== COMMUNITY ART API (MongoDB) ==========
+
+app.get("/api/community-art", async (req, res) => {
+  try {
+    const art = await CommunityArt.find().lean();
+    res.json(art);
+  } catch (e) {
+    console.error("Error fetching community art:", e);
+    res
+      .status(500)
+      .json({ ok: false, message: "Failed to fetch community art" });
+  }
+});
+
+app.post("/api/community-art", async (req, res) => {
   const { error, value } = communityArtSchema.validate(req.body, {
     abortEarly: false,
     stripUnknown: true
@@ -324,31 +465,24 @@ app.post("/api/community-art", (req, res) => {
     });
   }
 
-  const newArt = {
-    id: nextCommunityId++,
-    ...value
-  };
+  try {
+    const created = await CommunityArt.create(value);
 
-  communityArt.push(newArt);
-
-  return res.status(201).json({
-    ok: true,
-    message: "Community art added successfully",
-    art: newArt
-  });
-});
-
-app.put("/api/community-art/:id", (req, res) => {
-  const id = parseInt(req.params.id, 10);
-  const index = communityArt.findIndex((a) => a.id === id);
-
-  if (index === -1) {
-    return res.status(404).json({
+    return res.status(201).json({
+      ok: true,
+      message: "Community art added successfully",
+      art: created
+    });
+  } catch (e) {
+    console.error("Error creating community art:", e);
+    return res.status(500).json({
       ok: false,
-      message: "Artwork not found"
+      message: "Failed to create community art"
     });
   }
+});
 
+app.put("/api/community-art/:id", async (req, res) => {
   const { error, value } = communityUpdateSchema.validate(req.body, {
     abortEarly: false,
     stripUnknown: true
@@ -362,39 +496,67 @@ app.put("/api/community-art/:id", (req, res) => {
     });
   }
 
-  // Always update title
-  communityArt[index].title = value.title;
+  const id = req.params.id;
 
-  // Optionally update imageUrl if provided (so Edit Image works)
+  const update = {
+    title: value.title
+  };
+
   if (value.imageUrl) {
-    communityArt[index].imageUrl = value.imageUrl;
+    update.imageUrl = value.imageUrl;
   }
 
-  return res.json({
-    ok: true,
-    message: "Artwork updated successfully",
-    art: communityArt[index]
-  });
-});
+  try {
+    const updated = await CommunityArt.findByIdAndUpdate(id, update, {
+      new: true
+    }).lean();
 
-app.delete("/api/community-art/:id", (req, res) => {
-  const id = parseInt(req.params.id, 10);
-  const index = communityArt.findIndex((a) => a.id === id);
+    if (!updated) {
+      return res.status(404).json({
+        ok: false,
+        message: "Artwork not found"
+      });
+    }
 
-  if (index === -1) {
-    return res.status(404).json({
+    return res.json({
+      ok: true,
+      message: "Artwork updated successfully",
+      art: updated
+    });
+  } catch (e) {
+    console.error("Error updating artwork:", e);
+    return res.status(500).json({
       ok: false,
-      message: "Artwork not found"
+      message: "Failed to update artwork"
     });
   }
+});
 
-  const removed = communityArt.splice(index, 1)[0];
+app.delete("/api/community-art/:id", async (req, res) => {
+  const id = req.params.id;
 
-  return res.json({
-    ok: true,
-    message: "Artwork removed successfully",
-    art: removed
-  });
+  try {
+    const removed = await CommunityArt.findByIdAndDelete(id).lean();
+
+    if (!removed) {
+      return res.status(404).json({
+        ok: false,
+        message: "Artwork not found"
+      });
+    }
+
+    return res.json({
+      ok: true,
+      message: "Artwork removed successfully",
+      art: removed
+    });
+  } catch (e) {
+    console.error("Error deleting artwork:", e);
+    return res.status(500).json({
+      ok: false,
+      message: "Failed to delete artwork"
+    });
+  }
 });
 
 app.listen(PORT, () => {
