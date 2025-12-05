@@ -69,13 +69,14 @@ const weaponSchema = Joi.object({
   img: Joi.string().required()
 });
 
-// NEW: schema used for editing an existing weapon (no label/category/subclass/img required)
+// UPDATED: allow optional img on update so we can change the weapon image
 const weaponUpdateSchema = Joi.object({
   name: Joi.string().required(),
   type: Joi.string().required(),
   scaling: Joi.string().required(),
   requirements: Joi.string().required(),
-  description: Joi.string().required()
+  description: Joi.string().required(),
+  img: Joi.string().optional()
 });
 
 const communityArtSchema = Joi.object({
@@ -83,8 +84,10 @@ const communityArtSchema = Joi.object({
   imageUrl: Joi.string().required()
 });
 
+// UPDATED: allow optional imageUrl on community edit
 const communityUpdateSchema = Joi.object({
-  title: Joi.string().required()
+  title: Joi.string().required(),
+  imageUrl: Joi.string().optional()
 });
 
 // ===== ROOT =====
@@ -232,7 +235,7 @@ app.post("/api/weapons", (req, res) => {
   });
 });
 
-// NEW: update an existing weapon (used by your Save Edit button)
+// UPDATED: update weapon, including optional img field
 app.put("/api/weapons/:id", (req, res) => {
   const id = parseInt(req.params.id, 10);
   const index = weapons.findIndex((w) => w.id === id);
@@ -257,6 +260,7 @@ app.put("/api/weapons/:id", (req, res) => {
     });
   }
 
+  // Always update text fields
   weapons[index] = {
     ...weapons[index],
     name: value.name,
@@ -265,6 +269,12 @@ app.put("/api/weapons/:id", (req, res) => {
     requirements: value.requirements,
     description: value.description
   };
+
+  // If an img was provided in the update, update img + imgs array
+  if (value.img) {
+    weapons[index].img = value.img;
+    weapons[index].imgs = [value.img];
+  }
 
   return res.json({
     ok: true,
@@ -352,7 +362,13 @@ app.put("/api/community-art/:id", (req, res) => {
     });
   }
 
+  // Always update title
   communityArt[index].title = value.title;
+
+  // Optionally update imageUrl if provided (so Edit Image works)
+  if (value.imageUrl) {
+    communityArt[index].imageUrl = value.imageUrl;
+  }
 
   return res.json({
     ok: true,
