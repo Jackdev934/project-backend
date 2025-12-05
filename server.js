@@ -12,7 +12,21 @@ const PORT = process.env.PORT || 3001;
 const MONGODB_URI =
   process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/ds3db";
 
-// ===== STATIC DATA (for lore + seeding) =====
+mongoose
+  .connect(MONGODB_URI)
+  .then(async () => {
+    console.log("Connected to MongoDB");
+    await seedWeaponsIfEmpty();
+  })
+  .catch((err) => console.error("MongoDB connection error:", err));
+
+app.use("/images", express.static(path.join(__dirname, "public", "images")));
+
+app.use(cors());
+app.use(express.json());
+
+// ===== DATA REQUIRES (STATIC LORE INFO) =====
+
 const bosses = require(path.join(__dirname, "public", "data", "bosses.json"));
 const bossInfo = require(path.join(__dirname, "public", "data", "bossInfo.js"));
 
@@ -30,33 +44,19 @@ const worldInfo = require(path.join(
   "worldInfo.js"
 ));
 
-const weaponsInfo = require(path.join(
-  __dirname,
-  "public",
-  "data",
-  "weapons.js"
-));
-
-const baseWeapons = require(path.join(
+const weaponsSeed = require(path.join(
   __dirname,
   "public",
   "data",
   "weapons.json"
 ));
 
-// ===== MONGOOSE CONNECT =====
-mongoose
-  .connect(MONGODB_URI)
-  .then(async () => {
-    console.log("Connected to MongoDB");
-    await seedWeaponsIfEmpty();
-  })
-  .catch((err) => console.error("MongoDB connection error:", err));
-
-app.use("/images", express.static(path.join(__dirname, "public", "images")));
-
-app.use(cors());
-app.use(express.json());
+const weaponsInfo = require(path.join(
+  __dirname,
+  "public",
+  "data",
+  "weapons.js"
+));
 
 // ===== MONGOOSE SCHEMAS / MODELS =====
 
@@ -70,8 +70,7 @@ const weaponMongoSchema = new mongoose.Schema(
     scaling: { type: String, required: true },
     requirements: { type: String, required: true },
     description: { type: String, required: true },
-    // img is now OPTIONAL so seeding doesn’t fail if some entries have no image
-    img: { type: String, required: false, default: "" },
+    img: { type: String }, // not required so seeding never fails
     imgs: [String]
   },
   { timestamps: true }
@@ -121,49 +120,6 @@ const communityUpdateSchema = Joi.object({
   title: Joi.string().required(),
   imageUrl: Joi.string().optional()
 });
-
-// ===== SEEDING FUNCTION =====
-
-async function seedWeaponsIfEmpty() {
-  try {
-    const count = await Weapon.countDocuments();
-    if (count > 0) {
-      return;
-    }
-
-    console.log("Weapons collection empty – seeding from weapons.json...");
-
-    const docs = baseWeapons.map((w) => {
-      const info = weaponsInfo[w.label] || weaponsInfo[w.name] || {};
-      const imgsFromInfo = info.imgs || [];
-      const imgsFromWeapon = w.imgs || (w.img ? [w.img] : []);
-      const imgs = imgsFromWeapon.length ? imgsFromWeapon : imgsFromInfo;
-      const primaryImg = imgs[0] || "";
-
-      return {
-        name: w.name,
-        label: w.label,
-        category: w.category,
-        subclass: w.subclass,
-        type: w.type,
-        scaling: w.scaling,
-        requirements: w.requirements,
-        description: w.description || info.text || "",
-        img: primaryImg,
-        imgs
-      };
-    });
-
-    if (docs.length > 0) {
-      await Weapon.insertMany(docs);
-      console.log(`Seeded ${docs.length} weapons into MongoDB.`);
-    } else {
-      console.log("No base weapons found to seed.");
-    }
-  } catch (err) {
-    console.error("Error seeding weapons:", err);
-  }
-}
 
 // ===== ROOT =====
 
@@ -562,3 +518,43 @@ app.delete("/api/community-art/:id", async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
+
+// ===== SEEDING FUNCTION =====
+
+async function seedWeaponsIfEmpty() {
+  try {
+    const count = await Weapon.countDocuments();
+    if (count > 0) {
+      return;
+    }
+
+    console.log("Weapons collection empty – seeding from weapons.json...");
+
+    const docs = weaponsSeed.map((w) => {
+      const info = weaponsInfo[w.label] || weaponsInfo[w.name] || {};
+      const imgsFromInfo = info.imgs || [];
+      const seedImg = w.img || imgsFromInfo[0] || "";
+      const imgs =
+        (w.imgs && w.imgs.length > 0 && w.imgs) ||
+        (imgsFromInfo.length > 0 ? imgsFromInfo : seedImg ? [seedImg] : []);
+
+      return {
+        name: w.name,
+        label: w.label,
+        category: w.category,
+        subclass: w.subclass,
+        type: w.type,
+        scaling: w.scaling,
+        requirements: w.requirements,
+        description: w.description || info.text || "",
+        img: seedImg,
+        imgs
+      };
+    });
+
+    await Weapon.insertMany(docs);
+    console.log("Weapons collection seeded.");
+  } catch (err) {
+    console.error("Error seeding weapons:", err);
+  }
+}
