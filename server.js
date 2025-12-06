@@ -9,24 +9,7 @@ const mongoose = require("mongoose");
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-const MONGODB_URI =
-  process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/ds3db";
-
-mongoose
-  .connect(MONGODB_URI)
-  .then(async () => {
-    console.log("Connected to MongoDB");
-    await seedWeaponsIfEmpty();
-  })
-  .catch((err) => console.error("MongoDB connection error:", err));
-
-app.use("/images", express.static(path.join(__dirname, "public", "images")));
-
-app.use(cors());
-app.use(express.json());
-
-// ===== DATA REQUIRES (STATIC LORE INFO) =====
-
+// ===== STATIC DATA (for bosses/characters/worlds + weapon lore) =====
 const bosses = require(path.join(__dirname, "public", "data", "bosses.json"));
 const bossInfo = require(path.join(__dirname, "public", "data", "bossInfo.js"));
 
@@ -44,13 +27,6 @@ const worldInfo = require(path.join(
   "worldInfo.js"
 ));
 
-const weaponsSeed = require(path.join(
-  __dirname,
-  "public",
-  "data",
-  "weapons.json"
-));
-
 const weaponsInfo = require(path.join(
   __dirname,
   "public",
@@ -58,8 +34,17 @@ const weaponsInfo = require(path.join(
   "weapons.js"
 ));
 
+// JSON used only for initial seeding
+const weaponsSeed = require(path.join(
+  __dirname,
+  "public",
+  "data",
+  "weapons.json"
+));
+
 // ===== MONGOOSE SCHEMAS / MODELS =====
 
+// NOTE: img is OPTIONAL here so seed data without an img will still save
 const weaponMongoSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
@@ -70,7 +55,7 @@ const weaponMongoSchema = new mongoose.Schema(
     scaling: { type: String, required: true },
     requirements: { type: String, required: true },
     description: { type: String, required: true },
-    img: { type: String }, // not required so seeding never fails
+    img: { type: String },   // <-- no "required: true" anymore
     imgs: [String]
   },
   { timestamps: true }
@@ -88,7 +73,7 @@ const communityArtMongoSchema = new mongoose.Schema(
 
 const CommunityArt = mongoose.model("CommunityArt", communityArtMongoSchema);
 
-// ===== JOI SCHEMAS =====
+// ===== JOI SCHEMAS (what the API expects from the client) =====
 
 const weaponSchema = Joi.object({
   name: Joi.string().required(),
@@ -99,7 +84,7 @@ const weaponSchema = Joi.object({
   scaling: Joi.string().required(),
   requirements: Joi.string().required(),
   description: Joi.string().required(),
-  img: Joi.string().required()
+  img: Joi.string().required() // user-added weapons must have an image
 });
 
 const weaponUpdateSchema = Joi.object({
@@ -120,6 +105,60 @@ const communityUpdateSchema = Joi.object({
   title: Joi.string().required(),
   imageUrl: Joi.string().optional()
 });
+
+// ===== MONGODB CONNECTION + INITIAL SEEDING =====
+
+const MONGODB_URI =
+  process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/ds3db";
+
+mongoose
+  .connect(MONGODB_URI)
+  .then(async () => {
+    console.log("Connected to MongoDB");
+
+    // Seed weapons collection once if it's empty
+    const count = await Weapon.countDocuments();
+    if (count === 0) {
+      console.log("Weapons collection empty – seeding from weapons.json...");
+      try {
+        const docs = weaponsSeed.map((w) => {
+          const lore = weaponsInfo[w.label] || weaponsInfo[w.name] || {};
+          const description = w.description || lore.text || "";
+          const imgFromLore = Array.isArray(lore.imgs) && lore.imgs.length > 0
+            ? lore.imgs[0]
+            : "";
+          const img = w.img || imgFromLore || "";
+          const imgs = [];
+          if (img) imgs.push(img);
+
+          return {
+            name: w.name,
+            label: w.label,
+            category: w.category,
+            subclass: w.subclass,
+            type: w.type,
+            scaling: w.scaling,
+            requirements: w.requirements,
+            description,
+            img,
+            imgs
+          };
+        });
+
+        await Weapon.insertMany(docs);
+        console.log(`Seeded ${docs.length} weapons`);
+      } catch (err) {
+        console.error("Error seeding weapons:", err);
+      }
+    }
+  })
+  .catch((err) => console.error("MongoDB connection error:", err));
+
+// ===== MIDDLEWARE =====
+
+app.use("/images", express.static(path.join(__dirname, "public", "images")));
+app.use(cors());
+app.use(express.json());
 
 // ===== ROOT =====
 
@@ -518,43 +557,3 @@ app.delete("/api/community-art/:id", async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
-
-// ===== SEEDING FUNCTION =====
-
-async function seedWeaponsIfEmpty() {
-  try {
-    const count = await Weapon.countDocuments();
-    if (count > 0) {
-      return;
-    }
-
-    console.log("Weapons collection empty – seeding from weapons.json...");
-
-    const docs = weaponsSeed.map((w) => {
-      const info = weaponsInfo[w.label] || weaponsInfo[w.name] || {};
-      const imgsFromInfo = info.imgs || [];
-      const seedImg = w.img || imgsFromInfo[0] || "";
-      const imgs =
-        (w.imgs && w.imgs.length > 0 && w.imgs) ||
-        (imgsFromInfo.length > 0 ? imgsFromInfo : seedImg ? [seedImg] : []);
-
-      return {
-        name: w.name,
-        label: w.label,
-        category: w.category,
-        subclass: w.subclass,
-        type: w.type,
-        scaling: w.scaling,
-        requirements: w.requirements,
-        description: w.description || info.text || "",
-        img: seedImg,
-        imgs
-      };
-    });
-
-    await Weapon.insertMany(docs);
-    console.log("Weapons collection seeded.");
-  } catch (err) {
-    console.error("Error seeding weapons:", err);
-  }
-}
