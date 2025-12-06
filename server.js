@@ -5,6 +5,8 @@ const cors = require("cors");
 const path = require("path");
 const Joi = require("joi");
 const mongoose = require("mongoose");
+const multer = require("multer");
+const fs = require("fs");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -64,6 +66,45 @@ const weaponsInfo = require(path.join(
 app.use("/images", express.static(path.join(__dirname, "public", "images")));
 app.use(cors());
 app.use(express.json());
+
+// ===== UPLOADS STATIC FOLDER & MULTER CONFIG =====
+const uploadsDir = path.join(__dirname, "uploads");
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir);
+}
+
+// Serve uploaded images from /uploads
+app.use("/uploads", express.static(uploadsDir));
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, uploadsDir);
+  },
+  filename: function (req, file, cb) {
+    const safeName = file.originalname.replace(/\s+/g, "_");
+    cb(null, Date.now() + "-" + safeName);
+  }
+});
+
+const upload = multer({ storage });
+
+// Single image upload endpoint (used by Weapons & Community)
+app.post("/api/upload-image", upload.single("file"), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({
+      ok: false,
+      message: "No file uploaded"
+    });
+  }
+
+  const relativePath = `/uploads/${req.file.filename}`;
+
+  return res.status(201).json({
+    ok: true,
+    message: "Image uploaded successfully",
+    path: relativePath
+  });
+});
 
 // ===== MONGOOSE SCHEMAS / MODELS =====
 
@@ -183,7 +224,9 @@ mongoose
         await Weapon.insertMany(toInsert);
         console.log(`Seeded ${toInsert.length} weapons into MongoDB.`);
       } else {
-        console.log(`Weapons collection already has ${weaponCount} docs – no seed.`);
+        console.log(
+          `Weapons collection already has ${weaponCount} docs – no seed.`
+        );
       }
     } catch (err) {
       console.error("Error seeding weapons:", err);
