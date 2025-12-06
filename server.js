@@ -62,7 +62,11 @@ const weaponMongoSchema = new mongoose.Schema(
     requirements: { type: String, required: true },
     description: { type: String, required: true },
     // Make img NOT required so seeding can fall back, and set a default
-    img: { type: String, required: false, default: "/images/weapons/default.png" },
+    img: {
+      type: String,
+      required: false,
+      default: "/images/weapons/default.png"
+    },
     imgs: [String]
   },
   { timestamps: true }
@@ -254,16 +258,18 @@ app.get("/api/worlds", (req, res) => {
   }
 });
 
-// ========== WEAPONS API (MongoDB) ==========
+// ========== WEAPONS API (MongoDB + static fallback) ==========
 
-const buildWeaponList = async () => {
-  const docs = await Weapon.find().lean();
-
+// Build list from Mongo docs
+const buildWeaponListFromDocs = (docs) => {
   return docs.map((w) => {
     const info = weaponsInfo[w.label] || weaponsInfo[w.name] || {};
     const imgsFromInfo = info.imgs || [];
     const imgsFromWeapon =
       (w.imgs && w.imgs.length > 0 && w.imgs) || (w.img ? [w.img] : []);
+
+    const imgs = imgsFromInfo.length ? imgsFromInfo : imgsFromWeapon;
+    const img = imgs[0] || "/images/weapons/default.png";
 
     return {
       id: w._id.toString(),
@@ -275,9 +281,62 @@ const buildWeaponList = async () => {
       scaling: w.scaling,
       requirements: w.requirements,
       description: w.description || info.text || "",
-      imgs: imgsFromInfo.length ? imgsFromInfo : imgsFromWeapon
+      img,
+      imgs
     };
   });
+};
+
+// Build list from static JSON/JS files
+const buildWeaponListFromStatic = () => {
+  console.warn(
+    "Using static weapons.json + weapons.js as fallback (no DB weapons)."
+  );
+
+  return weaponsSeed.map((w, index) => {
+    const info = weaponsInfo[w.label] || weaponsInfo[w.name] || {};
+
+    const imgsFromInfo = info.imgs || [];
+    const imgsFromWeapon =
+      (w.imgs && w.imgs.length > 0 && w.imgs) || (w.img ? [w.img] : []);
+
+    const imgs = imgsFromInfo.length ? imgsFromInfo : imgsFromWeapon;
+    const img = imgs[0] || "/images/weapons/default.png";
+
+    return {
+      id: `static-${index}`,
+      name: w.name,
+      label: w.label,
+      category: w.category,
+      subclass: w.subclass,
+      type: w.type,
+      scaling: w.scaling,
+      requirements: w.requirements,
+      description: w.description || info.text || "",
+      img,
+      imgs
+    };
+  });
+};
+
+const buildWeaponList = async () => {
+  try {
+    const docs = await Weapon.find().lean();
+
+    if (docs && docs.length > 0) {
+      // Use DB weapons if present
+      return buildWeaponListFromDocs(docs);
+    }
+
+    // Otherwise fall back to static data
+    return buildWeaponListFromStatic();
+  } catch (err) {
+    console.error(
+      "Error fetching weapons from MongoDB, falling back to static data:",
+      err
+    );
+    return buildWeaponListFromStatic();
+  }
 };
 
 app.get("/api/weapons", async (req, res) => {
