@@ -12,6 +12,22 @@ const PORT = process.env.PORT || 3001;
 const MONGODB_URI =
   process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/ds3db";
 
+// ===== MONGOOSE CONNECTION HELPERS / LOGGING =====
+const isMongoConnected = () => mongoose.connection.readyState === 1;
+// 0 = disconnected, 1 = connected, 2 = connecting, 3 = disconnecting
+
+mongoose.connection.on("connected", () => {
+  console.log("Mongoose connected to:", MONGODB_URI);
+});
+
+mongoose.connection.on("error", (err) => {
+  console.error("Mongoose connection error:", err);
+});
+
+mongoose.connection.on("disconnected", () => {
+  console.warn("Mongoose disconnected");
+});
+
 // ===== STATIC DATA (for lore + seeding) =====
 const bosses = require(path.join(__dirname, "public", "data", "bosses.json"));
 const bossInfo = require(path.join(__dirname, "public", "data", "bossInfo.js"));
@@ -363,6 +379,15 @@ app.post("/api/weapons", async (req, res) => {
     });
   }
 
+  // Check DB connection before trying to write
+  if (!isMongoConnected()) {
+    return res.status(503).json({
+      ok: false,
+      message:
+        "Database is not connected on the server. Check MONGODB_URI and MongoDB Atlas network access."
+    });
+  }
+
   try {
     const imgs = value.imgs || (value.img ? [value.img] : []);
     const created = await Weapon.create({
@@ -391,7 +416,7 @@ app.post("/api/weapons", async (req, res) => {
     console.error("Error creating weapon:", e);
     return res.status(500).json({
       ok: false,
-      message: "Failed to create weapon"
+      message: `Failed to create weapon (DB error: ${e.message})`
     });
   }
 });
@@ -530,6 +555,14 @@ app.post("/api/community-art", async (req, res) => {
     });
   }
 
+  if (!isMongoConnected()) {
+    return res.status(503).json({
+      ok: false,
+      message:
+        "Database is not connected on the server. Check MONGODB_URI and MongoDB Atlas network access."
+    });
+  }
+
   try {
     const created = await CommunityArt.create(value);
 
@@ -542,7 +575,7 @@ app.post("/api/community-art", async (req, res) => {
     console.error("Error creating community art:", e);
     return res.status(500).json({
       ok: false,
-      message: "Failed to create community art"
+      message: `Failed to create community art (DB error: ${e.message})`
     });
   }
 });
